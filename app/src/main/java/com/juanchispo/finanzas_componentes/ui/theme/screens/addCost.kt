@@ -1,7 +1,5 @@
 package com.juanchispo.finanzas_componentes.ui.theme.screens
 
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,37 +8,40 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.juanchispo.finanzas_componentes.language.LocalStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(
-    onBack: () -> Unit = {}
-) {
+fun AddExpenseScreen(onBack: () -> Unit = {}) {
+    val strings = LocalStrings.current
 
-    var monto by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("Comida") }
-    var fecha by remember { mutableStateOf("24/04/2024") }
+    var monto      by remember { mutableStateOf("") }
+    var categoria  by remember { mutableStateOf("") }
+    var fecha      by remember { mutableStateOf("24/04/2024") }
     var descripcion by remember { mutableStateOf("") }
+    var expanded   by remember { mutableStateOf(false) }
 
-    val categorias = listOf("Comida", "Transporte", "Salud", "Ocio")
+    val categorias = listOf(
+        strings.catFood, strings.catTransport, strings.catHealth, strings.catLeisure
+    )
 
-    var expanded by remember { mutableStateOf(false) }
+    // Inicializa la categoría con el primer elemento del idioma actual
+    LaunchedEffect(strings) { categoria = categorias.first() }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Agregar Gasto") },
+                title = { Text(strings.addExpenseTitle) },
                 navigationIcon = {
-                    IconButton(onClick = { onBack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF357ABD),
+                    containerColor    = Color(0xFF357ABD),
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 )
@@ -49,56 +50,34 @@ fun AddExpenseScreen(
     ) { padding ->
 
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(16.dp)
-                .fillMaxSize()
+            modifier = Modifier.padding(padding).padding(16.dp).fillMaxSize()
         ) {
-
-            // 🔹 MONTO
-            Text("Monto")
+            Text(strings.amountLabel)
             Spacer(modifier = Modifier.height(4.dp))
-
             OutlinedTextField(
-                value = monto,
+                value         = monto,
                 onValueChange = { monto = it },
-                leadingIcon = { Text("$") },
-                modifier = Modifier.fillMaxWidth()
+                leadingIcon   = { Text("$") },
+                modifier      = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🔹 CATEGORÍA
-            Text("Categoría")
+            Text(strings.categoryLabel)
             Spacer(modifier = Modifier.height(4.dp))
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
-            ) {
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
                 OutlinedTextField(
-                    value = categoria,
+                    value         = categoria,
                     onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
+                    readOnly      = true,
+                    trailingIcon  = { Icon(Icons.Default.KeyboardArrowDown, null) },
+                    modifier      = Modifier.fillMaxWidth().menuAnchor()
                 )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     categorias.forEach {
                         DropdownMenuItem(
-                            text = { Text(it) },
-                            onClick = {
-                                categoria = it
-                                expanded = false
-                            }
+                            text    = { Text(it) },
+                            onClick = { categoria = it; expanded = false }
                         )
                     }
                 }
@@ -106,49 +85,34 @@ fun AddExpenseScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🔹 FECHA
-            Text("Fecha")
+            Text(strings.dateLabel)
             Spacer(modifier = Modifier.height(4.dp))
-
             OutlinedTextField(
-                value = fecha,
+                value         = fecha,
                 onValueChange = { fecha = it },
-                trailingIcon = {
-                    Icon(Icons.Default.DateRange, contentDescription = null)
-                },
-                modifier = Modifier.fillMaxWidth()
+                trailingIcon  = { Icon(Icons.Default.DateRange, null) },
+                modifier      = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🔹 DESCRIPCIÓN
-            Text("Descripción")
+            Text(strings.descriptionLabel)
             Spacer(modifier = Modifier.height(4.dp))
-
             OutlinedTextField(
-                value = descripcion,
+                value         = descripcion,
                 onValueChange = { descripcion = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
+                modifier      = Modifier.fillMaxWidth().height(100.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 🔹 BOTÓN GUARDAR
             Button(
-                onClick = {
-                    // Aquí puedes guardar el gasto
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50)
-                ),
-                shape = RoundedCornerShape(8.dp)
+                onClick  = {},
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                shape    = RoundedCornerShape(8.dp)
             ) {
-                Text("Guardar", color = Color.White)
+                Text(strings.saveButton, color = Color.White)
             }
         }
     }
